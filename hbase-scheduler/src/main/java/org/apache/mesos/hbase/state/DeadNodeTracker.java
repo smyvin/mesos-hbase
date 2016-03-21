@@ -44,7 +44,7 @@ public class DeadNodeTracker
     timestampMap.put(nodeType, new Timestamp(date.getTime()));
   }
 
-  public void resetDeadNodeTimeStamps(int deadMasterNodes, int deadDataNodes, int deadStargateNodes)
+  public void resetDeadNodeTimeStamps(int deadMasterNodes, int deadDataNodes)
   {
     if (deadMasterNodes > 0) {
       resetMasterNodeTimeStamp();
@@ -52,10 +52,6 @@ public class DeadNodeTracker
 
     if (deadDataNodes > 0) {
       resetDataNodeTimeStamp();
-    }
-
-    if (deadStargateNodes > 0) {
-      resetStargateNodeTimeStamp();
     }
   }
 
@@ -85,13 +81,4 @@ public class DeadNodeTracker
     return timestamp != null && timestamp.before(new Date());
   }
 
-  boolean stargateNodeTimerExpired()
-  {
-    return nodeTimerExpired(STARGATENODES_KEY);
-  }
-
-  void resetStargateNodeTimeStamp()
-  {
-    resetNodeTimeStamp(STARGATENODES_KEY);
-  }
 }

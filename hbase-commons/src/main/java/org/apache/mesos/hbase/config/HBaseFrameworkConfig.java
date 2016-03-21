@@ -23,12 +23,10 @@ public class HBaseFrameworkConfig {
   private static final int DEFAULT_EXECUTOR_HEAP_SIZE = 256;
   private static final int DEFAULT_SLAVENODE_HEAP_SIZE = 1024;
   private static final int DEFAULT_MASTERNODE_HEAP_SIZE = 4096;
-  private static final int DEFAULT_STARGATE_HEAP_SIZE = 256;
 
   private static final double DEFAULT_CPUS = 0.5;
   private static final double DEFAULT_EXECUTOR_CPUS = DEFAULT_CPUS;
   private static final double DEFAULT_PRIMARYNODE_CPUS = 1;
-  private static final double DEFAULT_STARGATE_CPUS = 0.2;
   private static final double DEFAULT_DATANODE_CPUS = 1;
 
   private static final double DEFAULT_JVM_OVERHEAD = 1.15;
@@ -36,10 +34,6 @@ public class HBaseFrameworkConfig {
   private static final int DEFAULT_ZK_TIME_MS = 20000;
   private static final int DEFAULT_RECONCILIATION_TIMEOUT = 30;
   private static final int DEFAULT_DEADNODE_TIMEOUT = 90;
-
-  private static final int DEFAULT_STARGATE_NODE_COUNT = 2;
-
-  private static final int DEFAULT_STARGATE_PORT = 8088;
 
   private final Log log = LogFactory.getLog(HBaseFrameworkConfig.class);
 
@@ -114,20 +108,8 @@ public class HBaseFrameworkConfig {
     return getConf().getInt("mesos.hbase.master.heap.size", DEFAULT_MASTERNODE_HEAP_SIZE);
   }
 
-  public int getStargateNodeHeapSize() {
-    return getConf().getInt("mesos.hbase.stargate.heap.size", DEFAULT_STARGATE_HEAP_SIZE);
-  }
-
   public int getExecutorHeap() {
     return getConf().getInt("mesos.hbase.executor.heap.size", DEFAULT_EXECUTOR_HEAP_SIZE);
-  }
-
-  public int getStargateNodeCount() {
-    return getConf().getInt("mesos.hbase.stargate.node.count", DEFAULT_STARGATE_NODE_COUNT);
-  }
-
-  public int getStargateServerPort() {
-    return getConf().getInt("mesos.hbase.stargate.port", DEFAULT_STARGATE_PORT);
   }
 
   public int getTaskHeapSize(String taskName) {
@@ -138,9 +120,6 @@ public class HBaseFrameworkConfig {
         break;
       case "slavenode":
         size = getSlaveNodeHeapSize();
-        break;
-      case "stargatenode":
-        size = getStargateNodeHeapSize();
         break;
       default:
         final String msg = "Invalid request for heapsize for taskName = " + taskName;
@@ -178,10 +157,6 @@ public class HBaseFrameworkConfig {
     return getConf().getDouble("mesos.hbase.master.cpus", DEFAULT_PRIMARYNODE_CPUS);
   }
 
-  public double getStargateNodeCpus() {
-    return getConf().getDouble("mesos.hbase.stargate.cpus", DEFAULT_STARGATE_CPUS);
-  }
-
   public double getSlaveNodeCpus() {
     return getConf().getDouble("mesos.hbase.slave.cpus", DEFAULT_DATANODE_CPUS);
   }
@@ -194,9 +169,6 @@ public class HBaseFrameworkConfig {
         break;
       case "slavenode":
         cpus = getSlaveNodeCpus();
-        break;
-      case "stargatenode":
-        cpus = getStargateNodeCpus();
         break;
       default:
         final String msg = "Invalid request for CPUs for taskName= " + taskName;

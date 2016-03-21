@@ -328,13 +328,8 @@ public class HBaseScheduler implements org.apache.mesos.Scheduler, Runnable {
     return true;
   }
 
-  private String getCommand(String taskType)
-  {
-    if (HBaseConstants.STARGATE_NODE_ID.equals(taskType))
-      return String.format("bin/hbase-mesos-%s %d", taskType,
-          hbaseFrameworkConfig.getStargateServerPort());
-    else
-      return String.format("bin/hbase-mesos-%s", taskType);
+  private String getCommand(String taskType){
+    return String.format("bin/hbase-mesos-%s", taskType);
   }
 
   private String getNextTaskName(String taskType) {
@@ -423,9 +418,7 @@ public class HBaseScheduler implements org.apache.mesos.Scheduler, Runnable {
 
   private String getJvmOpts(String taskType)
   {
-    if (HBaseConstants.STARGATE_NODE_ID.equals(taskType))
-      return hbaseFrameworkConfig.getJvmOpts();
-    else if (HBaseConstants.MASTER_NODE_ID.equals(taskType))
+    if (HBaseConstants.MASTER_NODE_ID.equals(taskType))
       return hbaseFrameworkConfig.getJvmOpts();
     else if (HBaseConstants.SLAVE_NODE_ID.equals(taskType))
       return hbaseFrameworkConfig.getJvmOpts();
@@ -438,9 +431,6 @@ public class HBaseScheduler implements org.apache.mesos.Scheduler, Runnable {
     int heapSize = hbaseFrameworkConfig.getHadoopHeapSize();
     if (null != taskType)
       switch (taskType) {
-        case HBaseConstants.STARGATE_NODE_ID:
-          heapSize = hbaseFrameworkConfig.getStargateNodeHeapSize();
-          break;
         case HBaseConstants.MASTER_NODE_ID:
           heapSize = hbaseFrameworkConfig.getMasterNodeHeapSize();
           break;
@@ -554,11 +544,8 @@ public class HBaseScheduler implements org.apache.mesos.Scheduler, Runnable {
     // What number of DN's should we try to recover or should we remove this constraint
     // entirely?
     if (deadDataNodes.isEmpty()) {
-      if (persistenceStore.slaveNodeRunningOnSlave(offer.getHostname())
-          || persistenceStore.masterNodeRunningOnSlave(offer.getHostname()))
-      {
+      if (persistenceStore.slaveNodeRunningOnSlave(offer.getHostname()) || persistenceStore.masterNodeRunningOnSlave(offer.getHostname())){
         log.info(String.format("Already running hbase task on %s", offer.getHostname()));
-        return tryToLaunchStargateNode(driver, offer);
       } else {
         launch = true;
       }
@@ -570,35 +557,6 @@ public class HBaseScheduler implements org.apache.mesos.Scheduler, Runnable {
           offer,
           HBaseConstants.SLAVE_NODE_ID,
           HBaseConstants.SLAVE_NODE_ID,
-          HBaseConstants.NODE_EXECUTOR_ID);
-    }
-    return false;
-  }
-
-  private boolean tryToLaunchStargateNode(SchedulerDriver driver, Offer offer)
-  {
-    if (!acceptOffer(offer, "stargate", hbaseFrameworkConfig.getStargateNodeCpus(),
-        hbaseFrameworkConfig.getStargateNodeHeapSize()))
-      return false;
-
-    boolean launch = false;
-    List<String> deadStargateNodes = persistenceStore.getDeadStargateNodes();
-
-    if (deadStargateNodes.isEmpty()) {
-      if (persistenceStore.getStargateNodes().size() >= hbaseFrameworkConfig.getStargateNodeCount()) {
-        log.info(String.format("Already running %s stargate nodes",
-            hbaseFrameworkConfig.getStargateNodeCount()));
-      } else {
-        launch = true;
-      }
-    } else if (deadStargateNodes.contains(offer.getHostname())) {
-      launch = true;
-    }
-    if (launch) {
-      return launchNode(driver,
-          offer,
-          HBaseConstants.STARGATE_NODE_ID,
-          HBaseConstants.STARGATE_NODE_ID,
           HBaseConstants.NODE_EXECUTOR_ID);
     }
     return false;

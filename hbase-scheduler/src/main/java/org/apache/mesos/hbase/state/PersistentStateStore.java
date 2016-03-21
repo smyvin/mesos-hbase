@@ -53,9 +53,8 @@ public class PersistentStateStore implements IPersistentStateStore
 
     int deadMasterNodes = getDeadMasterNodes().size();
     int deadDataNodes = getDeadDataNodes().size();
-    int deadStargateNodes = getDeadStargateNodes().size();
 
-    deadNodeTracker.resetDeadNodeTimeStamps(deadMasterNodes, deadDataNodes, deadStargateNodes);
+    deadNodeTracker.resetDeadNodeTimeStamps(deadMasterNodes, deadDataNodes);
   }
 
   @Override
@@ -118,8 +117,6 @@ public class PersistentStateStore implements IPersistentStateStore
       case HBaseConstants.SLAVE_NODE_ID:
         addDataNode(taskId, hostname);
         break;
-      case HBaseConstants.STARGATE_NODE_ID:
-        addStargateNode(taskId, hostname);
       default:
         logger.error("Task name unknown");
     }
@@ -130,13 +127,6 @@ public class PersistentStateStore implements IPersistentStateStore
     Map<String, String> dataNodes = getRegionNodes();
     dataNodes.put(hostname, taskId.getValue());
     setDataNodes(dataNodes);
-  }
-
-  private void addStargateNode(Protos.TaskID taskId, String hostname)
-  {
-    Map<String, String> dataNodes = getStargateNodes();
-    dataNodes.put(hostname, taskId.getValue());
-    setStargateNodes(dataNodes);
   }
 
   private void addPrimaryNode(Protos.TaskID taskId, String hostname, String taskName)
@@ -332,52 +322,6 @@ public class PersistentStateStore implements IPersistentStateStore
       hbaseStore.set(SLAVENODES_KEY, dataNodes);
     } catch (Exception e) {
       logger.error("Error while setting data nodes in persistent state", e);
-    }
-  }
-
-  @Override
-  public Map<String, String> getStargateNodes()
-  {
-    return getNodesMap(STARGATENODES_KEY);
-  }
-
-  @Override
-    public List<String> getDeadStargateNodes()
-    {
-        List<String> deadDataHosts = new ArrayList<>();
-
-        if (deadNodeTracker.stargateNodeTimerExpired()) {
-            removeDeadStargateNodes();
-        } else {
-            Map<String, String> dataNodes = getStargateNodes();
-            final Set<Map.Entry<String, String>> dataNodeEntries = dataNodes.entrySet();
-            for (Map.Entry<String, String> dataNode : dataNodeEntries) {
-                if (dataNode.getValue() == null) {
-                    deadDataHosts.add(dataNode.getKey());
-                }
-            }
-        }
-        return deadDataHosts;
-    }
-
-  private void removeDeadStargateNodes()
-  {
-    deadNodeTracker.resetStargateNodeTimeStamp();
-    Map<String, String> dataNodes = getStargateNodes();
-    List<String> deadDataHosts = getDeadStargateNodes();
-    for (String deadDataHost : deadDataHosts) {
-      dataNodes.remove(deadDataHost);
-      logger.info("Removing Rest Host: " + deadDataHost);
-    }
-    setStargateNodes(dataNodes);
-  }
-
-  private void setStargateNodes(Map<String, String> dataNodes)
-  {
-    try {
-      hbaseStore.set(STARGATENODES_KEY, dataNodes);
-    } catch (Exception e) {
-      logger.error("Error while setting stargate nodes in persistent state", e);
     }
   }
 
