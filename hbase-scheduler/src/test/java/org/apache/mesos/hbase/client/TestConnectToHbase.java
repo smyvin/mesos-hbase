@@ -21,7 +21,7 @@ public class TestConnectToHbase
 
   public static void main(String[] args) throws Exception
     {
-        String hbaseZookeeperQuorum="127.0.0.1,192.168.0.1";
+        String hbaseZookeeperQuorum="172.31.0.111";
         int hbaseZookeeperClientPort=2181;
         // You need a configuration object to tell the client where to connect.
         // When you create a HBaseConfiguration, it reads in whatever you've set

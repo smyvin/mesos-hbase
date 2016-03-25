@@ -44,25 +44,25 @@
   <property>
     <name>mesos.hbase.state.zk</name>
     <description>Comma-separated hostname-port pairs of zookeeper node locations for HDFS framework state information</description>
-    <value>localhost:2181</value>
+    <value>master.mesos:2181</value>
   </property>
 
   <property>
     <name>mesos.master.uri</name>
     <description>Zookeeper entry for mesos master location</description>
-    <value>zk://localhost:2181/mesos</value>
+    <value>zk://master.mesos:2181/mesos</value>
   </property>
 
   <property>
     <name>mesos.hbase.zkfc.ha.zookeeper.quorum</name>
     <description>Comma-separated list of zookeeper hostname-port pairs for HDFS HA features</description>
-    <value>localhost:2181</value>
+    <value>master.mesos:2181</value>
   </property>
   
   <property>
     <name>hbase.rootdir.hdfs.nameserver.address</name>
     <description>HDFS nameserver address</description>
-    <value>localhost</value>
+    <value>master.mesos</value>
   </property>
   
   <property>
@@ -80,7 +80,7 @@
   <property>
     <name>mesos.hbase.mesosdns</name>
     <description>Whether to use Mesos DNS for service discovery within HDFS</description>
-    <value>false</value>
+    <value>true</value>
   </property>
 
   <property>
@@ -98,7 +98,7 @@
   <property>
     <name>mesos.native.library</name>
     <description>Location of libmesos.so</description>
-    <value>/usr/local/lib/libmesos.so</value>
+    <value>/usr/lib/libmesos.so</value>
   </property>
 
   <!-- Additional settings for fine-tuning -->
@@ -130,17 +130,17 @@
 
   <property>
     <name>mesos.hbase.executor.cpus</name>
-    <value>0.5</value>
+    <value>0.1</value>
   </property>
 
   <property>
     <name>mesos.hbase.master.cpus</name>
-    <value>1</value>
+    <value>0.3</value>
   </property>
 
   <property>
     <name>mesos.hbase.slave.cpus</name>
-    <value>1</value>
+    <value>0.3</value>
   </property>
 
   <property>

@@ -56,7 +56,7 @@ public class TestScheduler {
   @Test
   public void statusUpdateWasStagingNowRunning() {
     when(liveState.getCurrentAcquisitionPhase()).thenReturn(AcquisitionPhase.START_MASTER_NODES);
-    
+
     Protos.TaskID taskId = createTaskId("1");
 
     scheduler.statusUpdate(driver, createTaskStatus(taskId, Protos.TaskState.TASK_RUNNING));
